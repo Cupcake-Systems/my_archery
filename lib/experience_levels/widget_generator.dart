@@ -37,34 +37,37 @@ class _LevelWidgetState extends State<LevelWidget> {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: ExpansionTile(
-        childrenPadding: const EdgeInsets.all(8),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(widget.level.name),
-            Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.rotationY(pi),
-              child: RatingStars(
-                value: getLevelScore(widget.level.name),
-                valueLabelVisibility: false,
-                starColor: Theme.of(context).colorScheme.primary,
-                starOffColor: Colors.transparent,
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          childrenPadding: const EdgeInsets.all(8),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(widget.level.name),
+              Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.rotationY(pi),
+                child: RatingStars(
+                  value: getLevelScore(widget.level.name),
+                  valueLabelVisibility: false,
+                  starColor: Theme.of(context).colorScheme.primary,
+                  starOffColor: Colors.transparent,
+                ),
               ),
-            ),
+            ],
+          ),
+          children: [
+            for (final step in widget.level.steps) ...[
+              LevelStepWidget(
+                step: step,
+                level: widget.level,
+                scoreUpdate: () => setState(() {}),
+              ),
+              const SizedBox(height: 8),
+            ],
           ],
         ),
-        children: [
-          for (final step in widget.level.steps) ...[
-            LevelStepWidget(
-              step: step,
-              level: widget.level,
-              scoreUpdate: () => setState(() {}),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ],
       ),
     );
   }
@@ -89,9 +92,9 @@ class LevelStepWidget extends StatefulWidget {
 class _LevelStepWidgetState extends State<LevelStepWidget> {
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      style: ButtonStyle(
-        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+    return ElevatedButton(
+      style: const ButtonStyle(
+        elevation: WidgetStatePropertyAll(1.5),
       ),
       onPressed: () async {
         await Navigator.of(context).push(
@@ -152,32 +155,35 @@ class _LevelSubStepWidgetState extends State<LevelSubStepWidget> {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: ExpansionTile(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(widget.subStep.name),
-          ],
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(widget.subStep.name),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              RatingStars(
+                valueLabelVisibility: false,
+                onValueChanged: (value) {
+                  setState(() {
+                    Storage.setLevelSubStepRating(widget.level.name, widget.levelStep.name, widget.subStep.name, value);
+                  });
+                },
+                value: Storage.getLevelSubStepRating(widget.level.name, widget.levelStep.name, widget.subStep.name),
+              ),
+              const SizedBox(height: 10),
+              Text(widget.subStep.description),
+            ],
+          ),
+          childrenPadding: const EdgeInsets.all(8),
+          children: [Text(widget.subStep.details)],
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-            RatingStars(
-              valueLabelVisibility: false,
-              onValueChanged: (value) {
-                setState(() {
-                  Storage.setLevelSubStepRating(widget.level.name, widget.levelStep.name, widget.subStep.name, value);
-                });
-              },
-              value: Storage.getLevelSubStepRating(widget.level.name, widget.levelStep.name, widget.subStep.name),
-            ),
-            const SizedBox(height: 10),
-            Text(widget.subStep.description),
-          ],
-        ),
-        childrenPadding: const EdgeInsets.all(8),
-        children: [Text(widget.subStep.details)],
       ),
     );
   }
