@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:my_archery/experience_levels/skeleton_parser.dart';
+import 'package:my_archery/experience_levels/widget_generator.dart';
+import 'package:my_archery/storage.dart';
 
-void main() {
+late final LevelSkeleton levelSkeleton;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  levelSkeleton = SkeletonParser.parseJson(await rootBundle.loadString("assets/skeleton.json"));
+  Storage.init();
   runApp(const MyApp());
 }
 
@@ -10,9 +19,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'My Archery',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink, brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.white,
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       home: const MyHomePage(),
@@ -32,10 +44,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("My Archery"),
       ),
-      body: const Center(),
+      body: WidgetGenerator(skeleton: levelSkeleton),
     );
   }
 }
