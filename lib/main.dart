@@ -16,9 +16,9 @@ late final PackageInfo packageInfo;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Storage.init();
   levelSkeleton = SkeletonParser.parseJson(await rootBundle.loadString("assets/skeleton.json"));
   packageInfo = await PackageInfo.fromPlatform();
-  Storage.init();
   runApp(const MyApp());
 }
 
