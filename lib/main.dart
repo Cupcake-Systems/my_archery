@@ -22,34 +22,44 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My Archery',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.black,
+          seedColor: Storage.getMainColor() ?? Colors.black,
           brightness: Brightness.light,
         ),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.white,
+          seedColor: Storage.getMainColor() ?? Colors.white,
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      themeMode: Storage.getTheme(),
+      home: MyHomePage(
+        mainColorUpdate: () => setState(() {}),
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  final void Function() mainColorUpdate;
+
+  const MyHomePage({super.key, required this.mainColorUpdate});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -96,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return const SettingsPage();
+                      return SettingsPage(mainColorChange: widget.mainColorUpdate);
                     },
                   ),
                 );
