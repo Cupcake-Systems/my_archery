@@ -26,8 +26,9 @@ class SettingsPage extends StatelessWidget {
                   ),
                   ListTile(
                     title: const Text("Farbe"),
-                    trailing: ElevatedButton(
-                      child: const Text('Auswählen'),
+                    trailing: ElevatedButton.icon(
+                      icon: Icon(Icons.circle, color: Storage.getMainColor()),
+                      label: const Text('Auswählen'),
                       onPressed: () {
                         Color color = Storage.getMainColor() ?? Colors.white;
                         showDialog(
